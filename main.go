@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	content, _ := os.ReadFile("config.ncwu")
+	content, _ := os.ReadFile("netlogin.conf")
 	config := string(content)
 	info:= strings.Split(config, ",")
 	username := info[0]
