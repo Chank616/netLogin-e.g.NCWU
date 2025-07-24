@@ -5,14 +5,14 @@ name: Go
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 jobs:
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
 
@@ -26,3 +26,9 @@ jobs:
 
     - name: Test
       run: go test -v ./...
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-executable
+        path: ./bin/myapp.exe 
