@@ -24,6 +24,15 @@ jobs:
     - name: Build
       run: go build -v ./...
 
+    - name: Create bin directory
+      run: mkdir bin
+    
+    - name: Build
+      run: go build -v -o bin/myapp.exe ./main.go  # 明确指定入口文件
+    
+    - name: Verify executable exists
+      run: dir bin\  # Windows下查看目录内容
+    
     - name: Test
       run: go test -v ./...
 
