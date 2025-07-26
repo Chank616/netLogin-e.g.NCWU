@@ -1,46 +1,52 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
-name: Go
+name: Go Build and Release (Single Runner)
 
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-  paths-ignore:
-    - 'README.md'
-    - 'docs/**'
-    - '*.md'
+    tags:
+      - "v*" 
+    paths-ignore:
+      - '.github/workflows/**'
+      - 'README.md'
+      - 'docs/**'
+      - '*.md'
 jobs:
+  build-and-release:
+    runs-on: windows-latest  
 
-  build:
-    runs-on: windows-latest
+    permissions:
+      contents: write  
+
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.20'
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
 
-    - name: Build
-      run: go build -v ./...
+      - name: Build
+        run: go build -v ./...
 
-    - name: Create bin directory
-      run: mkdir bin
-    
-    - name: Build
-      run: go build -v -o bin/myapp.exe ./main.go  # 明确指定入口文件
-    
-    - name: Verify executable exists
-      run: dir bin\  # Windows下查看目录内容
-    
-    - name: Test
-      run: go test -v ./...
+      - name: Create bin directory
+        run: mkdir bin
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: windows-executable
-        path: ./bin/myapp.exe 
+      - name: Build executable
+        run: go build -v -o bin/myapp.exe ./main.go
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-executable
+          path: ./bin/myapp.exe
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/') 
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}  # Release 标题
+          body: |
+            Automated Release for **${{ github.ref_name }}**
+            - 自动构建 Windows 可执行文件
+          files: bin/myapp.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
