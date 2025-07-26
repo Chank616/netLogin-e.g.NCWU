@@ -20,7 +20,7 @@ func main() {
 	// ip
 	params := make(map[string]string)
 	now := fmt.Sprintf("%d", time.Now().Unix()*100)
-	params["callback"] = "jQuery112406336369815771166_" + now
+	params["callback"] = "jQuery112406336369815776666_" + now
 	params["_"] = now
 	resp := utils.Get("http://192.168.0.170/cgi-bin/rad_user_info", params)
 	if resp == "超时无法访问" {
